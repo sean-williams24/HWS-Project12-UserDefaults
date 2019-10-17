@@ -70,6 +70,13 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
     }
 
     
+    func saveData() {
+        if let savedData = try? NSKeyedArchiver.archivedData(withRootObject: people, requiringSecureCoding: false) {
+            let defaults = UserDefaults.standard
+            defaults.set(savedData, forKey: "people")
+        }
+    }
+    
     
     //MARK: - Collection View Delegate / Data Source
 
