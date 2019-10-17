@@ -16,6 +16,13 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNewPerson))
 
+        let defaults = UserDefaults.standard
+        
+        if let savedPeople = defaults.object(forKey: "people") as? Data {
+            if let decodedPeople = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(savedPeople) as? [Person] {
+                people = decodedPeople
+            }
+        }
     }
 
 
@@ -39,6 +46,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         // create new person
         let person = Person(name: "Unknown", image: imageName)
         people.append(person)
+        save()
         collectionView.reloadData()
         
         //Dismisses the top-most view controller
@@ -70,7 +78,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
     }
 
     
-    func saveData() {
+    func save() {
         if let savedData = try? NSKeyedArchiver.archivedData(withRootObject: people, requiringSecureCoding: false) {
             let defaults = UserDefaults.standard
             defaults.set(savedData, forKey: "people")
@@ -120,6 +128,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
                 //Attempt to read textfields text
                 guard let newName = ac?.textFields?[0].text else { return }
                 person.name = newName
+                self?.save()
                 self?.collectionView.reloadData()
             }))
             
